@@ -1,3 +1,6 @@
+Doc (google doc):
+https://docs.google.com/a/pivotal.io/document/d/1qpUyJ9bqXdykLux3FnViOzCicCos3tvrFaLaD26ZuZ0/edit#
+
 Building the project:
 
 1. Open build.sh, set your gemfire.jar location
