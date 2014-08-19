@@ -16,6 +16,7 @@ import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.stream.Stream;
 import com.gemstone.gemfire.stream.StreamExistsException;
+import com.gemstone.gemfire.stream.StreamInitException;
 
 public class StreamManager {
   
@@ -38,15 +39,19 @@ public class StreamManager {
     return cache;
   }
 
-  public Stream createStream(String streamName) throws StreamExistsException {
+  public Stream createStream(String streamName) throws StreamExistsException, StreamInitException {
     // Check if stream with given name already exists.
-    if (streams.containsKey(streamName)) {
-      throw new StreamExistsException("Stream with given name already exists");
+    synchronized (streams) {
+      if (streams.containsKey(streamName)) {
+        throw new StreamExistsException("Stream with given name already exists");
+      }
+
+      StreamImpl s = new StreamImpl(streamName);
+      s.initStream();
+
+      streams.put(streamName, s);
+      return s;
     }
-    
-    Stream s = new StreamImpl(streamName);
-    streams.put(streamName, s);
-    return s;
   }
   
   public Stream getStream(String streamName) {

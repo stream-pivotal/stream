@@ -8,12 +8,17 @@
 
 package com.gemstone.gemfire.stream;
 
-public class StreamExistsException extends Exception {
-  public StreamExistsException() {
-    
-  }
+public class StreamExistsException extends StreamException {
 
+  public StreamExistsException() {
+  }
+  
   public StreamExistsException(String msg) {
     super(msg);
   }
+  
+  public StreamExistsException(String msg, Exception ex) {
+    super(msg, ex);
+  }
+  
 }

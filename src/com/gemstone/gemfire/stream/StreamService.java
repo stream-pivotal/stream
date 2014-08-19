@@ -10,7 +10,8 @@ package com.gemstone.gemfire.stream;
 
 import java.util.Collection;
 
-import com.gemstone.gemfire.stream.internal.*;
+import com.gemstone.gemfire.stream.internal.StreamManager;
+
 
 /*
  *
@@ -18,7 +19,7 @@ import com.gemstone.gemfire.stream.internal.*;
  */
 public class StreamService {
 
-  public static Stream createStream(String streamName) throws StreamExistsException {
+  public static Stream createStream(String streamName) throws StreamExistsException, StreamInitException {
     return StreamManager.getInstance().createStream(streamName);
   }
   

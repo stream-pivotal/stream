@@ -19,6 +19,8 @@ import com.gemstone.gemfire.cache.asyncqueue.AsyncEventQueueFactory;
 import com.gemstone.gemfire.cache.asyncqueue.internal.AsyncEventQueueImpl;
 import com.gemstone.gemfire.stream.Stream;
 import com.gemstone.gemfire.stream.StreamFn;
+import com.gemstone.gemfire.stream.*;
+
 
 public class StreamImpl implements Stream {
   
@@ -30,21 +32,28 @@ public class StreamImpl implements Stream {
   
   public StreamImpl(String streamName) {
     this.streamName = streamName; 
+  }
+  
+  public void initStream() throws StreamInitException {
     
     // Get Cache handle to create stream's root region.
+    try {
     Cache cache = StreamManager.getInstance().getCache();
         
     // Create async queue.
     AsyncEventQueueFactory factory = cache.createAsyncEventQueueFactory();
-    //factory.setPersistent(true);
+    // Enable persistence based on user confg.
+    factory.setPersistent(false);
     //factory.setDiskStoreName("exampleStore");
     factory.setParallel(false);
     AsyncEventListener listener = new StreamListener(this);
     AsyncEventQueueImpl asyncQueue = (AsyncEventQueueImpl)factory.create(streamName + "_AQ", listener);
     
     // Create stream root region with async queue.
-    this.streamRegion = cache.createRegionFactory(RegionShortcut.REPLICATE_PROXY).addAsyncEventQueueId(asyncQueue.getId()).create(streamName);
-
+    this.streamRegion = cache.createRegionFactory(RegionShortcut.REPLICATE_PROXY).addAsyncEventQueueId(asyncQueue.getId()).create(streamName);    
+    } catch (Exception ex) {
+      throw new StreamInitException("Failed to initialize the stream. " + ex.getMessage(),  ex);
+    }
   }
   
   public void streamData(Object data) {
